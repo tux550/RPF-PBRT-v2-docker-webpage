@@ -71,7 +71,11 @@
         La técnica de Random Parameter Filtering (RPF) busca reducir el numero de muestras necesarias para obtener una imagen de calidad.
         <br>
         Este algoritmo se basa en la hipotesis de que se puede mejorar la aproximación de radiancia de un pixel incoporando información de pixeles cercanos, tomando en consideración las dependencias en los parametros aleatorios y los features de las muestras. Para ello, se implementa un filtro bilateral cruzado ajustado a estas dependencias.
+        <br>
+        <img src="imgs/arch.png" alt="Arquitectura" class="h-full mx-auto my-4">
+        Esta propuesta es un algoritmo de postprocesamiento que se aplica a la imagen generada por un renderizador Monte-Carlo, por lo que es independiente al metodo de muestreo utilizado.
 
+    
         <!--La idea principal es que los parametros que generan ruido son aquellos que tienen una alta varianza en la imagen generada. Por lo tanto, se busca identificar y filtrar estos parametros para mejorar la calidad de la imagen sin incrementar el costo computacional.-->
 
         <h3 class="text-xl font-semibold mb-2">Algoritmo</h3>

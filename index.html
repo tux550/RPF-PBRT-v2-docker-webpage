@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Filtrado de Parámetros Aleatorios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 text-gray-900">
+
+    <!-- Encabezad -->
+     <header class="bg-black text-white
+     text-center py-4">
+      <h1 class="text-3xl font-semibold">Random Parameter Filter</h1>
+    </header>
+
+    <!-- Sección 1: Descripción del Proyecto -->
+    <section class="p-8 bg-white shadow-md rounded-lg my-8">
+      <h2 class="text-3xl font-semibold mb-4">Proyecto</h2>
+      <p class="text-md">
+        El presente proyecto busca replicar el trabajo presentado por Pradeep Sen y Soheil Darabi en su artículo <a href="http://civc.ucsb.edu/graphics/Papers/Sen2011_RPF" class="text-blue-500 hover:underline"><i>On Filtering the Noise from the Random Parameters in Monte Carlo Rendering</i></a>.
+
+        <!--
+        Encapsulamiento y actualización de la implementación de <a href="http://civc.ucsb.edu/graphics/Papers/Sen2011_RPF" class="text-blue-500 hover:underline">Random Parameter Filter en PBRTv2</a>, originalmente desarollado por Pradeep Sen y Soheil Darabi.
+        -->
+      </p>
+
+      <h2 class="text-2xl font-semibold mt-4">Objetivos</h2>
+      <ul class="list-disc pl-5">
+        <li class="text-md">
+          Crear un ambiente dockerizado para la compilación y ejecucción de la implementación de RPF en PBRTv2
+        </li>
+        <li class="text-md">
+          Experimentar y contrastar los resultados obtenidos con la implementación original
+        </li>
+      </ul>
+
+      <h2 class="text-2xl font-semibold mt-4">Integrantes</h2>
+      <ul class="list-disc pl-5">
+        <li class="text-md">Rodrigo Gabriel Salazar Alva</li>
+        <li class="text-md">---</li>
+      </ul>
+
+      <h2 class="text-2xl font-semibold mt-4">Codigo Fuente</h2>
+      <ul class="list-disc pl-5">
+        <li class="text-md">Github: <a href="https://github.com/tux550/RPF-PBRT-v2-docker" class="text-blue-500 hover:underline">RPF-PBRT-v2-docker</a></li>
+        <li class="text-md">Local: <a href="src/RPF-PBRT-v2-docker.zip" class="text-blue-500 hover:underline">Descargar</a></li>
+      </ul>
+    </section>
+
+    <!-- Sección 2: Justificación Teórica -->
+    <section class="p-8 bg-white shadow-md rounded-lg mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Justificación Teórica</h2>
+
+        <h3 class="text-xl font-semibold mb-2">RayTracing y Monte-Carlo</h3>
+        <p class="text-lg">
+        Los sistemas de <i>RayTracing</i> fotorrealistas como PBRT buscan simular la interacción de la luz con los objetos de una escena para generar imagenes de alta calidad. 
+        <br>
+        Desde una perspectiva teórica, la radiancia que recibe un pixel puede ser descrito como una integral sobre multiples parametros, incluyendo pero no limitandose a la posición en el plano de proyección (x,y), las cordenadas de intersección con el lente (u,v) y el tiempo de la captura (t). 
+
+        <img src="imgs/radiance.png" alt="Radiancia" class="w-full mx-auto my-4">
+
+        Los sistemas de Monte-Carlo buscan aproximar esta función mediante el muestreo aleatorio de los parametros de la integral. Sin embargo, la calidad de la imagen generada depende de la cantidad de muestras tomadas, lo que puede resultar en imagenes con ruido. Debido a que el ruido es inversamente proporcional al numero de muestras, las mejoras en la calidad de la imagen requieren un incremento exponencial en el numero de muestras, lo que resulta en un costo computacional prohibitivo.
+        </p>
+        <br>
+        <h3 class="text-xl font-semibold mb-2">Propuesta: Random Parameter filtering</h3>
+        <p class="text-lg">
+        La técnica de Random Parameter Filtering (RPF) busca reducir el numero de muestras necesarias para obtener una imagen de calidad.
+        <br>
+        La idea principal es que los parametros que generan ruido son aquellos que tienen una alta varianza en la imagen generada. Por lo tanto, se busca identificar y filtrar estos parametros para mejorar la calidad de la imagen sin incrementar el costo computacional.
+
+        </p>
+      </p>
+    </section>
+
+
+    <!-- Sección 3: Compilación de la Implementación -->
+    <section class="p-8 bg-white shadow-md rounded-lg mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Compilación y Ejecucción</h2>
+
+      <h3 class="text-xl font-semibold mb-2">Docker</h3>
+        <p class="text-lg">
+          Se provee un Dockerfile que construye un ambiente dockerizado con todas las dependencias necesarias para compilar y ejecutar la implementación de RPF en PBRTv2.
+          <br>
+          Detalles destacables:
+          <ul class="list-disc pl-5">
+            <li class="text-md">Imagen base: Ubuntu 22.04</li>
+            <li class="text-md">Instalación de dependencias</li>
+            <li class="text-md">Patch personalizado de la libreria de OpenEXR para compatibilidad con PBRTv2</li>
+          </ul>
+          <br>
+          El comando <code  class="text-sm text-gray-600 bg-gray-200 px-1 rounded">make docker</code> construye la imagen docker y el comando <code  class="text-sm text-gray-600 bg-gray-200 px-1 rounded">make shell</code> ejecuta la imagen docker en un contenedor interactivo. Tomar en consideración que los pasos posteriores asumen que se encuentra dentro del contenedor docker.
+        </p>
+      <br>
+      <h3 class="text-xl font-semibold mb-2">Compilación</h3>
+        <p class="text-lg">
+          Se utiliza <i>scons</i> como herramienta de compilación.
+          <br>
+          Se compilan tres versiones de PBRTv2:
+          <ul class="list-disc pl-5">
+            <li class="text-md">debug</li>
+            <li class="text-md">release</li>
+            <li class="text-md">stats</li>
+          </ul>
+          <br>
+          Comando: <code  class="text-sm text-gray-600 bg-gray-200 px-1 rounded">cd ./pbrt-v2-rpf/src && scons</code>
+        </p>
+      
+      <br>
+      <h3 class="text-xl font-semibold mb-2">Ejecucción</h3>
+        <p class="text-lg">
+          Para ejecutar el programa se debe correr el siguiente comando desde el directorio raiz del proyecto:
+          <br>
+          <code  class="text-sm text-gray-600 bg-gray-200 px-1 rounded">
+            ./pbrt-v2-rpf/build/linux-release/pbrt [--outfile &ltarchivo de salida&gt] &ltarchivo de escena&gt
+          </code>
+          <br>
+          Donde <code class="text-sm text-gray-600 bg-gray-200 px-1 rounded">[--outfile &lt;archivo de salida&gt;]</code> es el archivo donde se guardará la imagen renderizada y <code class="text-sm text-gray-600 bg-gray-200 px-1 rounded">&lt;archivo de escena&gt;</code> es el archivo de escena a renderizar.
+          <br>
+          Se proveen escenas de prueba en la carpeta <code  class="text-sm text-gray-600 bg-gray-200 px-1 rounded">./scenes</code>.
+          <br>
+          Para ejecutar el test de rendimiento con diferentes parametros se puede ejecutar la script de python <code  class="text-sm text-gray-600 bg-gray-200 px-1 rounded">runtest.py</code> desde el directorio raiz del proyecto.
+        </p>
+
+    </section>
+
+    <!-- Sección 4: Resultados -->
+    <section class="p-8 bg-white shadow-md rounded-lg">
+      <h2 class="text-2xl font-semibold mb-4">Resultados</h2>
+
+      <h3 class="text-xl font-semibold mb-2">Comparación Cualitativa</h3>
+      <p class="text-lg mb-4">
+        A continuación se presentan los resultados de renderizar la escena <code  class="text-sm text-gray-600 bg-gray-200 px-1 rounded">./scenes/Conference.pbrt</code> con y sin RPF (spp=8).
+        <br>
+        Adicionalmente, se incluye una imagen de referencia de renderizar la misma escena en PBRTv3 sin RPF con un spp de 8192.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-gray-200 rounded-lg">
+          <h4 class="text-lg font-semibold text-center">Sin RPF (8spp)</h4>
+          <p class="text-center">Tiempo de ejecucción: 5s</p>
+          <img src="imgs/Conference_8_MC_0008.png" alt="Conference_8_MC_0008.png" class="w-full object-contain">
+        </div>
+
+        <div class="bg-gray-200 rounded-lg">
+          <h4 class="text-lg font-semibold text-center">Con RPF (8spp)</h4>
+          <p class="text-center">Tiempo de ejecucción: 3 min 4s</p>
+          <img src="imgs/Conference_8_RPF_flt.png" alt="Conference_8_RPF_flt.png" class="w-full object-contain">
+        </div>
+
+        <div class="bg-gray-200 rounded-lg">
+          <h4 class="text-lg font-semibold text-center">PBRTv3 (8096spp)</h4>
+          <p class="text-center">Tiempo de ejecucción: 2h 24min 28s</p>
+          <img src="imgs/highres8192.png" alt="highres8192.png" class="w-full  object-contain">
+        </div>
+      </div>
+      <br>
+
+      Tomar en consideración que PBRTv2 y PBRTv3 utilizan diferentes implementaciónes del algoritmo de muestreo por lo que, aunque se intentó replicar los parametros de la escena, los resultados varian.
+      <br>
+
+      A pesar de esto, se puede observar que la implementación de RPF logra reducir el ruido en la imagen generada, comparable con el resultado de PBRTv3 con un costo computacional significativamente menor.
+      <br>
+    
+    <h3 class="text-xl font-semibold mb-2 mt-2">Experimentos Cuantitativos</h3>
+
+    <!-- Dos graficos lado a lado -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-gray-200 rounded-lg">
+        <h4 class="text-lg font-semibold text-center">Tiempo de ejecucción</h4>
+        <img src="imgs/execution_time.png" alt="execution_time.png"    class="w-full object-contain">
+      </div>
+      <div class="bg-gray-200 rounded-lg">
+        <h4 class="text-lg font-semibold text-center">Error Cuadrático Medio</h4>
+        <img src="imgs/mse.png" alt="mse.png" class="w-full object-contain">
+      </div>
+    </div>
+
+    Debido a las discrepancias entre la imagen usada de referencia y la generada por PBRTv2, los errores MSE son mayores a los esperados. No obstane, se puede observar que la implementación de RPF reduce su error a medida de que se incrementa el numero de muestras.
+    <br>
+    En lo que respecta al tiempo de ejecucción, no se ha logrado replicar los tiempos del paper (8spp con RPF = 32spp sin RPF). A pesar de ello, se observa que incluso en el peor de los casos (32 spp), el tiempo de RPF no supera al tiempo de Monte-Carlo de alta calidad sin RPF de PBRTv3
+
+
+    </section>
+  </body>
+</html>

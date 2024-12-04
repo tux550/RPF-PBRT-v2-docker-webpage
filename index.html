@@ -44,7 +44,7 @@
         <li class="text-md">---</li>
       </ul>
 
-      <h2 class="text-2xl font-semibold mt-4">Codigo Fuente</h2>
+      <h2 class="text-2xl font-semibold mt-4">Codigo Fuente: RPF</h2>
       <ul class="list-disc pl-5">
         <li class="text-md">Github: <a href="https://github.com/tux550/RPF-PBRT-v2-docker" class="text-blue-500 hover:underline">RPF-PBRT-v2-docker</a></li>
         <li class="text-md">Local: <a href="src/RPF-PBRT-v2-docker.zip" class="text-blue-500 hover:underline">Descargar</a></li>
@@ -53,6 +53,7 @@
       <h2 class="text-2xl font-semibold mt-4">Recursos Adicionales</h2>
       <ul class="list-disc pl-5">
         <li class="text-md">Presentación: <a href="files/Grafica-ProyectoFinal-RPF.pdf" class="text-blue-500 hover:underline">Descargar</a></li>
+        <li class="text-md">Repositorio de Docker PBRTv2: <a href="src/modern-PBRT-v2.zip" class="text-blue-500 hover:underline">Docker PBRTv2</a> (Ultima version de PBRTv2. Compilable dentro del mismo entorno docker que la implementación RPF)</li>
         <li class="text-md">Repositorio de Docker PBRTv3 : <a href="https://github.com/tux550/RayTracer-RPF" class="text-blue-500 hover:underline">Docker PBRTv3</a> (Docker + Implementación parcial de RPF en PBRTv3)
         </li> 
         <li class="text-md">Escena para PBRTv3: <a href="files/Conference.zip" class="text-blue-500 hover:underline">Descargar</a></li>
@@ -164,7 +165,7 @@
       <p class="text-lg mb-4">
         A continuación se presentan los resultados de renderizar la escena <code  class="text-sm text-gray-600 bg-gray-200 px-1 rounded">./scenes/Conference.pbrt</code> con y sin RPF (spp=8).
         <br>
-        Adicionalmente, se incluye una imagen de referencia de renderizar la misma escena en PBRTv3 sin RPF con un spp de 8192.
+        Adicionalmente, se incluye una imagen de referencia de renderizar la misma escena en la versión más reciente de PBRTv2 sin RPF con un spp de 8192.
       </p>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="bg-gray-200 rounded-lg">
@@ -180,37 +181,44 @@
         </div>
 
         <div class="bg-gray-200 rounded-lg">
-          <h4 class="text-lg font-semibold text-center">PBRTv3 (8096spp)</h4>
-          <p class="text-center">Tiempo de ejecucción: 2h 24min 28s</p>
-          <img src="imgs/highres8192.png" alt="highres8192.png" class="w-full  object-contain">
+          <h4 class="text-lg font-semibold text-center">Latest PBRTv2 (8096spp)</h4>
+          <p class="text-center">Tiempo de ejecucción: 32min 20s</p>
+          <img src="imgs/Conference_8192_PBRTV2.png" alt="highres8192.png" class="w-full  object-contain">
         </div>
       </div>
       <br>
+      Note como primer punto que incluso con 8192 spp, la imagen generada por PBRTv2 sin RPF presenta ruido, lo que demuestra la problematica de la relación costo-calidad en los sistemas de Monte-Carlo.
 
-      Tomar en consideración que PBRTv2 y PBRTv3 utilizan diferentes implementaciónes del algoritmo de muestreo por lo que, aunque se intentó replicar los parametros de la escena, los resultados varian.
-      <br>
-
-      A pesar de esto, se puede observar que la implementación de RPF logra reducir el ruido en la imagen generada, comparable con el resultado de PBRTv3 con un costo computacional significativamente menor.
-      <br>
+      En lo que respecto a la comparación entre las imagenes generadas con y sin RPF, se puede observar como la implementación de RPF logra reducir el ruido en la imagen generada, comparable con el resultado de la versión más reciente de PBRTv2 sin RPF con un spp de 8192. Sin embargo, se observan diferencias en la fidelidad de las sombras, las cuales son más suaves en la imagen generada por RPF. El algoritmo sácrifica la fidelidad de las sombras para reducir el ruido en la imagen. Esto se nota particularmente en las sombras de las sillas y el techo.
     
     <h3 class="text-xl font-semibold mb-2 mt-2">Experimentos Cuantitativos</h3>
 
-    <!-- Dos graficos lado a lado -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="bg-gray-200 rounded-lg">
         <h4 class="text-lg font-semibold text-center">Tiempo de ejecucción</h4>
         <img src="imgs/execution_time.png" alt="execution_time.png"    class="w-full object-contain">
       </div>
+
       <div class="bg-gray-200 rounded-lg">
-        <h4 class="text-lg font-semibold text-center">Error Cuadrático Medio</h4>
+        <h4 class="text-lg font-semibold text-center">Error Cuadrado Medio</h4>
         <img src="imgs/mse.png" alt="mse.png" class="w-full object-contain">
       </div>
+
+      <div class="bg-gray-200 rounded-lg">
+        <h4 class="text-lg font-semibold text-center">Structural Similarity Index Metric</h4>
+        <img src="imgs/ssim.png" alt="ssim.png"    class="w-full object-contain">
+      </div>
+
     </div>
 
-    Debido a las discrepancias entre la imagen usada de referencia y la generada por PBRTv2, los errores MSE son mayores a los esperados. No obstane, se puede observar que la implementación de RPF reduce su error a medida de que se incrementa el numero de muestras.
-    <br>
-    En lo que respecta al tiempo de ejecucción, no se ha logrado replicar los tiempos del paper (8spp con RPF = 32spp sin RPF). A pesar de ello, se observa que incluso en el peor de los casos (32 spp), el tiempo de RPF no supera al tiempo de Monte-Carlo de alta calidad sin RPF de PBRTv3
+    Tomar en consideración como primer punto a destacar que la implementación disponible de RPF hace un uso excesivo de memoria, por lo que se ha limitado el numero maximo de muestras a 64 spp. En la versión moderna de PBRTv2, si ha sido posible renderizar la escena con 8192 spp. No obstante, esta no es una comparación totalmente justa dado a que la versión más moderna de PBRTv2 ha sido optimizada y mejorada en varios aspectos.
 
+    <br>
+
+    A pesar de ello, podemos observar que las ejecucciones de RPF con 32 o menos spp tienen un tiempo de ejecucción menores a la imagen de referncia y presentan una significativa mejora en las métricas de error y similitud estructural. Sin embargo, a medida que se incrementa el numero de spp, el tiempo de ejecucción de RPF se dispara, sin una mejora significativa en las métricas de calidad.
+
+    <br>
+    Las observaciones realizadas sugieren que el algoritmo de RPF es efectivo en casos de uso con un numero bajo de muestras, pero pierde efectividad a medida que se incrementa el numero de muestras. Esto se debe a que el algoritmo se basa en la similitud de features y colores entre las muestras, lo que se vuelve más dificil de calcular a medida que se incrementa el numero de muestras.
 
     </section>
   </body>

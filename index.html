@@ -61,7 +61,7 @@
         <br>
         Desde una perspectiva teórica, la radiancia que recibe un pixel puede ser descrito como una integral sobre multiples parametros, incluyendo pero no limitandose a la posición en el plano de proyección (x,y), las cordenadas de intersección con el lente (u,v) y el tiempo de la captura (t). 
 
-        <img src="imgs/radiance.png" alt="Radiancia" class="w-full mx-auto my-4">
+        <img src="imgs/radiance.png" alt="Radiancia" class="h-full  mx-auto my-4">
 
         Los sistemas de Monte-Carlo buscan aproximar esta función mediante el muestreo aleatorio de los parametros de la integral. Sin embargo, la calidad de la imagen generada depende de la cantidad de muestras tomadas, lo que puede resultar en imagenes con ruido. Debido a que el ruido es inversamente proporcional al numero de muestras, las mejoras en la calidad de la imagen requieren un incremento exponencial en el numero de muestras, lo que resulta en un costo computacional prohibitivo.
         </p>
@@ -70,7 +70,23 @@
         <p class="text-lg">
         La técnica de Random Parameter Filtering (RPF) busca reducir el numero de muestras necesarias para obtener una imagen de calidad.
         <br>
-        La idea principal es que los parametros que generan ruido son aquellos que tienen una alta varianza en la imagen generada. Por lo tanto, se busca identificar y filtrar estos parametros para mejorar la calidad de la imagen sin incrementar el costo computacional.
+        Este algoritmo se basa en la hipotesis de que se puede mejorar la aproximación de radiancia de un pixel incoporando información de pixeles cercanos, tomando en consideración las dependencias en los parametros aleatorios y los features de las muestras. Para ello, se implementa un filtro bilateral cruzado ajustado a estas dependencias.
+
+        <!--La idea principal es que los parametros que generan ruido son aquellos que tienen una alta varianza en la imagen generada. Por lo tanto, se busca identificar y filtrar estos parametros para mejorar la calidad de la imagen sin incrementar el costo computacional.-->
+
+        <h3 class="text-xl font-semibold mb-2">Algoritmo</h3>
+        <img src="imgs/algoritmo.png" alt="Algoritmo" class="h-full mx-auto my-4">
+        El algoritmo propuesto por los investigadores consiste en un filtro que se evalua en iteraciones de tamaños de caja decrecientes. En cada pasada de filtro, el algoritmo realiza los siguientes pasos
+        
+        <ol class="list-decimal pl-5">
+          <li class="text-md"> Construye un vecindario de muestras a una distancia maxima igual al tamaño de caja actual (usando Gaussian sampling)</li>
+          <li class="text-md"> Filtra el vecindario en base al numero de desviaciones estandar de diferencia entre los features de las muestras y el promedio del pixel original</li>
+          <li class="text-md">Para cada muestra se calcula los hiperparametros Alfa y Beta en base a las dependencias entre parametros aleatorios, features y colores (usando aproximación mediante sumas de información mutua) </li>
+          <li class="text-md">Calcula el peso del filtro en base a la similitud de colores y features</li>
+          <li class="text-md">Se actualizan las muestras del pixel</li>
+        </ol>
+
+        Estos pasos permiten combinar las muestras de un pixel con sus vecinos de acuerdo a la similitud de sus features y colores, reduciendo el ruido en la imagen generada.
 
         </p>
       </p>
